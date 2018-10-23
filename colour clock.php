@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Colour Clock</title>
+		<style type="text/css">
+
+			@font-face { font-family: 'HUN-din 1451'; src: url('HunDIN1451.ttf'); }
+
+
+			body{
+				background-color: white;
+				padding: 0;
+				margin: 0;
+			}
+
+			#clock{
+				display: block;
+				margin: auto;
+				text-align: center;
+				font-size: 20vw;
+				font-family: 'HUN-din 1451';
+				color: white;
+				font-style: italic;
+				text-shadow: 0.7vw 0.7vw rgba(0,0,0, 0.25);
+				pointer-events: none;
+			}
+
+
+
+			div {
+			  	height: 100vh;
+			  	line-height: 100vh;
+			}
+
+
+
+		</style>
+	</head>
+
+
+	<body>
+
+		<div>
+			<p id="clock"></p>
+		</div>
+
+		<script type="text/javascript">
+
+			var FPS = 30;
+			var rgbMax = 200;
+			var rgbMin = 0;
+			var timeBand = (60/6)*FPS;
+			rgbRate = rgbMax/timeBand;
+
+			var rgbNow = [rgbMin, rgbMax, rgbMin, rgbMax, rgbMin, rgbMax];
+
+			var d = new Date();
+			var millcount = 0;//d.getSeconds()*FPS;
+
+			
+
+			function updateClock() {
+				var d = new Date();
+				var h = d.getHours();
+				var m = d.getMinutes();
+				var s = d.getSeconds();
+				var currentTime = h +':'+ m +':'+ s;
+
+				if (s< 10){currentTime = h +':'+ m +':'+ '0' + s;}
+				if (m< 10){currentTime = h +':'+ '0' + m +':'+ s;}		
+				if (h< 10){currentTime = '0' + h +':'+ m +':'+ s;}
+
+
+				if (m< 10 && s< 10){currentTime = h +':'+ '0' + m +':'+ '0' + s;}
+				if (h< 10 && m< 10){currentTime = '0' + h +':'+ '0' + m +':'+ s;}
+				if (h< 10 && s< 10){currentTime = '0' + h +':'+ m +':'+ '0' + s;}
+				if (h< 10 && m< 10 && s< 10){currentTime = '0' + h +':'+ '0' + m +':'+ '0' + s;}
+
+
+				millcount = millcount + 1;
+
+				if (millcount == 60*FPS) {millcount = 0};
+
+
+				function colorSelect(){
+					if (millcount == 0){
+						rgbNow = [rgbMin, rgbMax, rgbMin, rgbMax, rgbMin, rgbMax];
+					}
+					else if (millcount < timeBand){
+						rgbNow[0] = rgbNow[0] + rgbRate;
+						return 'rgb(' + rgbMax + ',' + rgbNow[0] + ',' + rgbMin + ')';
+					}
+					else if (millcount < timeBand*2){
+						rgbNow[1] = rgbNow[1] - rgbRate;
+						return 'rgb(' + rgbNow[1] + ',' + rgbMax + ',' + rgbMin + ')';
+					}
+					else if (millcount < timeBand*3){
+						rgbNow[2] = rgbNow[2] + rgbRate;
+						return 'rgb(' + rgbMin + ',' + rgbMax + ',' + rgbNow[2] + ')';
+					}
+					else if (millcount < timeBand*4){
+						rgbNow[3] = rgbNow[3] - rgbRate;
+						return 'rgb(' + rgbMin + ',' + rgbNow[3] + ',' + rgbMax + ')';
+					}
+					else if (millcount < timeBand*5){
+						rgbNow[4] = rgbNow[4] + rgbRate;
+						return 'rgb(' + rgbNow[4] + ',' + rgbMin + ',' + rgbMax + ')';
+					}
+					else if (millcount < timeBand*6){
+						rgbNow[5] = rgbNow[5] - rgbRate;
+						return 'rgb(' + rgbMax + ',' + rgbMin + ',' + rgbNow[5] + ')';
+					}
+					else {return 'black'}
+				}
+
+				document.getElementById("clock").innerHTML = currentTime;
+				document.body.style.background = colorSelect();
+
+				setTimeout(updateClock, 1000/FPS);
+
+			}
+			updateClock();
+
+
+		</script>
+	</body>
+</html>
